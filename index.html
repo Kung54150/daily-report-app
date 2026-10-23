@@ -25,6 +25,9 @@
   a.btn{display:inline-block;margin-top:22px;padding:13px 30px;background:#f2b84b;color:#0b2a52;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px}
   .card{margin-top:26px;background:#0d2a57;border:1px solid #24406f;border-radius:14px;padding:16px 18px;max-width:360px;width:100%;font-size:13.5px;line-height:1.75;color:#c6d3ea}
   .card b{color:#fff}
+  button.btn{display:inline-block;margin-top:14px;padding:13px 30px;border-radius:10px;border:1px solid #f2b84b;background:transparent;color:#f2b84b;font-weight:700;font-size:15px;font-family:inherit;cursor:pointer}
+  .card.warn{border-color:#f2b84b;color:#ffe3a3}
+  [hidden]{display:none!important}
   .hide{display:none!important}
 </style>
 </head>
@@ -39,6 +42,8 @@
 <!-- เปิดจากเบราว์เซอร์: ให้กดเข้าระบบ หรือดูวิธีติดตั้งเป็นแอป -->
 <div id="browser" class="hide" style="display:flex;flex-direction:column;align-items:center">
   <a class="btn" id="go" href="#">เข้าสู่ระบบ</a>
+  <button class="btn ghost" id="inst" type="button" hidden>ติดตั้งแอปลงมือถือ</button>
+  <div class="card warn" id="inapp" hidden><b>เปิดอยู่ในแอปอื่น (เช่น LINE / Facebook)</b><br>ติดตั้งไม่ได้จากที่นี่ กดเมนู ⋮ หรือไอคอนแชร์ แล้วเลือก "เปิดในเบราว์เซอร์" (Chrome หรือ Safari) ก่อน จากนั้นค่อยติดตั้ง</div>
   <div class="card" id="howto">
     <b>ติดตั้งเป็นแอปบนหน้าจอมือถือ</b><br>
     <b>iPhone (Safari):</b> กดปุ่มแชร์ → "เพิ่มไปยังหน้าจอโฮม"<br>
@@ -51,6 +56,17 @@
 var APP_URL = 'https://script.google.com/macros/s/AKfycbwqn20Um4PIXEc8PbPbTdnR7tyDVmDP-8uxXHf1lov0zsgBgegjWQmhf_TbZMJGDTmn/exec';
 
 if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+
+var deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredPrompt = e; document.getElementById('inst').hidden = false; });
+window.addEventListener('appinstalled', function () { document.getElementById('inst').hidden = true; deferredPrompt = null; });
+document.getElementById('inst').addEventListener('click', function () {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function () { deferredPrompt = null; document.getElementById('inst').hidden = true; });
+});
+var ua = navigator.userAgent || '';
+if (/Line\/|FBAN|FBAV|Instagram|MicroMessenger|; wv\)/i.test(ua)) { document.getElementById('inapp').hidden = false; }
 
 var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
 document.getElementById('go').href = APP_URL;
