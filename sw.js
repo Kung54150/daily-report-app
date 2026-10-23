@@ -1,9 +1,9 @@
-/* WardHub NSO service worker v1
+/* WardHub NSO service worker v2
    - หน้า HTML: ดึงจากเน็ตก่อนเสมอ (กันหน้าเก่าค้างในเครื่อง) ถ้าเน็ตหลุดใช้ของที่แคชไว้
    - ไฟล์รูป/manifest: ใช้จากแคชได้ เพื่อความเร็ว
    - ไม่ยุ่งกับลิงก์ script.google.com
 */
-const CACHE = 'wardhub-shell-v1';
+const CACHE = 'wardhub-shell-v2';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
